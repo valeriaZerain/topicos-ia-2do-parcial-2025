@@ -1,0 +1,1 @@
+# topicos-ia-2do-parcial-2025
