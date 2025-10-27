@@ -44,9 +44,13 @@ def get_schema(conn: sqlite3.Connection, table_name: str | None = None) -> str:
 
 def save_data_to_csv(data: list[tuple], filename: str) -> str:
     """
-    ===> YOUR TOOL DESCRIPTION HERE
+    Saves data to a CSV file.
     """
     print(f"   [Tool Action] Saving data to {filename}...")
-    ### ========================= ###
-    # YOUR TOOL IMPLEMENTATION HERE
-    ### ========================= ###
+    try:
+        with open(filename, mode='w', newline='', encoding='utf-8') as file:
+            writer = csv.writer(file)
+            writer.writerows(data)
+        return f"Data successfully saved to {os.path.abspath(filename)}."
+    except Exception as e:
+        return f"Error saving data to CSV: {e}"
