@@ -56,28 +56,25 @@ def create_agent(conn: sqlite3.Connection, query_history: list[str] | None = Non
 
     execute_sql_tool = dspy.Tool(
         name="execute_sql",
-        # ===> (1.1.2) YOUR execute_sql TOOL DESCRIPTION HERE
-        desc="",
+        desc="Esta herramienta ejecuta una consulta SQL en la base de datos y devuelve los resultados. Las entradas son consultas SQL válidas y las salidas son los resultados de la consulta.",
         # Use lambda to pass the 'conn' object
         func=lambda query: execute_sql(conn, query, query_history),
     )
 
     get_schema_tool = dspy.Tool(
         name="get_schema",
-        # ===> (1.1.2) YOUR get_schema_tool TOOL DESCRIPTION HERE
-        desc="",
+        desc="Esta herramienta obtiene el esquema de una tabla específica en la base de datos. La entrada es el nombre de la tabla y la salida es el esquema de la tabla.",
         # Use lambda to pass the 'conn' object
         func=lambda table_name: get_schema(conn, table_name),
     )
 
     save_csv_tool = dspy.Tool(
         name="save_data_to_csv",
-        # ===> YOUR save_csv_tool TOOL DESCRIPTION HERE
-        desc="",
+        desc="Esta herramienta guarda las respuestas que se dan al usuario en un archivo CSV. La entrada es la respuesta en lenguaje natural y la salida es la confirmación de que los datos se han guardado.",
         func=save_data_to_csv
     )
 
-    all_tools = [execute_sql_tool, get_schema_tool]     # Add save_csv_tool when completed
+    all_tools = [execute_sql_tool, get_schema_tool, save_csv_tool]
 
     # 2. Instantiate and run the agent
     agent = SQLAgent(tools=all_tools)
