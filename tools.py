@@ -51,6 +51,6 @@ def save_data_to_csv(data: list[tuple], filename: str) -> str:
         with open(filename, mode='w', newline='', encoding='utf-8') as file:
             writer = csv.writer(file)
             writer.writerows(data)
-        return f"Se guardo correctamente los datos en: {os.path.abspath(filename)}."
+        return f"Se guardo correctamente los datos en la ruta: {os.path.abspath(filename)}."
     except Exception as e:
-        return f"Error al guardar los datos en CSV: {e}"
+        return f"Ocurrió este error al guardar los datos en CSV: {e}"
