@@ -8,7 +8,12 @@ from tools import execute_sql, get_schema, save_data_to_csv
 # --- DSPy Agent Definition ---
 class SQLAgentSignature(dspy.Signature):
     """
-    ====> (1.1.1) YOUR AWESOME DESCRIPTION/PROMPT HERE
+    Este agente sirve para poder responder preguntas en lenguaje natural sobre
+    una base de datos SQL que trata acerca de ventas, empleados y sucursales.
+    Las herramientas que utiliza son:
+    1. execute_sql: ejecuta una consulta SQL en la base de datos y devuelve los resultados.
+    2. get_schema: obtiene el esquema de una tabla específica en la base de datos.
+    3. save_data_to_csv: guarda las respuestas que se dan al usuario en un archivo CSV.
     """
 
     question = dspy.InputField(desc="The user's natural language question.")
