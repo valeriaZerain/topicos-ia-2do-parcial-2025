@@ -70,7 +70,7 @@ def create_agent(conn: sqlite3.Connection, query_history: list[str] | None = Non
 
     save_csv_tool = dspy.Tool(
         name="save_data_to_csv",
-        desc="Esta herramienta guarda las respuestas que se dan al usuario en un archivo CSV. La entrada es la respuesta en lenguaje natural y la salida es la confirmación de que los datos se han guardado.",
+        desc="Esta herramienta guarda las respuestas que se dan al usuario en un archivo CSV. La entrada es la respuesta que se dió al usuario y la salida es la confirmación de que los datos se han guardado correctamente en un archivo CSV.",
         func=save_data_to_csv
     )
 
