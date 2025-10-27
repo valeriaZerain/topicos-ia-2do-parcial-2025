@@ -1,0 +1,80 @@
+import dspy
+import sqlite3
+from dotenv import load_dotenv
+
+from tools import execute_sql, get_schema, save_data_to_csv
+
+
+# --- DSPy Agent Definition ---
+class SQLAgentSignature(dspy.Signature):
+    """
+    ====> (1.1.1) YOUR AWESOME DESCRIPTION/PROMPT HERE
+    """
+
+    question = dspy.InputField(desc="The user's natural language question.")
+    initial_schema = dspy.InputField(desc="The initial database schema to guide you.")
+    answer = dspy.OutputField(
+        desc="The final, natural language answer to the user's question."
+    )
+
+
+class SQLAgent(dspy.Module):
+    """The SQL Agent Module"""
+    def __init__(self, tools: list[dspy.Tool]):
+        super().__init__()
+        # Initialize the ReAct agent.
+        self.agent = dspy.ReAct(
+            SQLAgentSignature,
+            tools=tools,
+            max_iters=7,  # Set a max number of steps
+        )
+
+    def forward(self, question: str, initial_schema: str) -> dspy.Prediction:
+        """The forward pass of the module."""
+        result = self.agent(question=question, initial_schema=initial_schema)
+        return result
+
+
+def configure_llm():
+    """Configures the DSPy language model."""
+    load_dotenv()
+    llm = dspy.LM(model="openai/gpt-4o-mini", max_tokens=4000)
+    dspy.settings.configure(lm=llm)
+
+    print("[Agent] DSPy configured with gpt-4o-mini model.")
+    return llm
+
+
+def create_agent(conn: sqlite3.Connection, query_history: list[str] | None = None) -> dspy.Module | None:
+    if not configure_llm():
+        return
+
+    execute_sql_tool = dspy.Tool(
+        name="execute_sql",
+        # ===> (1.1.2) YOUR execute_sql TOOL DESCRIPTION HERE
+        desc="",
+        # Use lambda to pass the 'conn' object
+        func=lambda query: execute_sql(conn, query, query_history),
+    )
+
+    get_schema_tool = dspy.Tool(
+        name="get_schema",
+        # ===> (1.1.2) YOUR get_schema_tool TOOL DESCRIPTION HERE
+        desc="",
+        # Use lambda to pass the 'conn' object
+        func=lambda table_name: get_schema(conn, table_name),
+    )
+
+    save_csv_tool = dspy.Tool(
+        name="save_data_to_csv",
+        # ===> YOUR save_csv_tool TOOL DESCRIPTION HERE
+        desc="",
+        func=save_data_to_csv
+    )
+
+    all_tools = [execute_sql_tool, get_schema_tool]     # Add save_csv_tool when completed
+
+    # 2. Instantiate and run the agent
+    agent = SQLAgent(tools=all_tools)
+
+    return agent
